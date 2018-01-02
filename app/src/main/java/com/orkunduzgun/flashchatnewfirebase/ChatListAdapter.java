@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
@@ -24,11 +27,42 @@ public class ChatListAdapter extends BaseAdapter {
     private String mDisplayName;
     private ArrayList<DataSnapshot> mSnapshotList;
 
+    private ChildEventListener mListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            mSnapshotList.add(dataSnapshot);
+            notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
     public ChatListAdapter(Activity activity, DatabaseReference ref, String name) {
          mActivity = activity;
          mDatabaseReference = ref;
          mDisplayName = name;
          mSnapshotList = new ArrayList<>();
+         mDatabaseReference.addChildEventListener(mListener);
     }
 
     static class ViewHolder {
@@ -39,12 +73,14 @@ public class ChatListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return mSnapshotList.size();
     }
 
     @Override
     public InstantMessage getItem(int i) {
-        return null;
+
+        DataSnapshot snap = mSnapshotList.get(i);
+        return snap.getValue(InstantMessage.class);
     }
 
     @Override
@@ -77,5 +113,9 @@ public class ChatListAdapter extends BaseAdapter {
         holder.body.setText(body);
 
         return convertView;
+    }
+
+    public void cleanup() {
+        mDatabaseReference.removeEventListener(mListener);
     }
 }
