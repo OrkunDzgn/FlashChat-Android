@@ -24,6 +24,8 @@ public class MainChatActivity extends AppCompatActivity {
     private ImageButton mSendButton;
     private DatabaseReference mDatabaseReference;
 
+    private ChatListAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +60,7 @@ public class MainChatActivity extends AppCompatActivity {
 
     // TODO: Retrieve the display name from the Shared Preferences
     private void setupDisplayName() {
-        SharedPreferences prefs = getSharedPre ferences(RegisterActivity.CHAT_PREFS, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(RegisterActivity.CHAT_PREFS, MODE_PRIVATE);
         mDisplayName = prefs.getString(RegisterActivity.DISPLAY_NAME_KEY, "Anonymous");
     }
 
@@ -76,14 +78,20 @@ public class MainChatActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: Override the onStart() lifecycle method. Setup the adapter here.
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAdapter = new ChatListAdapter(this,  mDatabaseReference, mDisplayName);
+        mChatListView.setAdapter(mAdapter);
+        Log.d("flashchat", "adapter created and connected with view");
+    }
 
 
     @Override
     public void onStop() {
         super.onStop();
 
-        // TODO: Remove the Firebase event listener on the adapter.
+        mAdapter.cleanup();
 
     }
 

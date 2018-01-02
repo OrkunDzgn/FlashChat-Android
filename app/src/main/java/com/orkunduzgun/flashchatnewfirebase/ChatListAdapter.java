@@ -2,6 +2,7 @@ package com.orkunduzgun.flashchatnewfirebase;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +31,9 @@ public class ChatListAdapter extends BaseAdapter {
     private ChildEventListener mListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
             mSnapshotList.add(dataSnapshot);
+            Log.d("flashchat", "snapshot received: " + dataSnapshot.getValue());
             notifyDataSetChanged();
-
         }
 
         @Override
@@ -62,6 +62,7 @@ public class ChatListAdapter extends BaseAdapter {
          mDatabaseReference = ref;
          mDisplayName = name;
          mSnapshotList = new ArrayList<>();
+         mDatabaseReference = ref.child("messages");
          mDatabaseReference.addChildEventListener(mListener);
     }
 
