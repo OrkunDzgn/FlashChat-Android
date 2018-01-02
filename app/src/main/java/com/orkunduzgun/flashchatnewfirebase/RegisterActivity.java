@@ -132,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-
+                    saveUsername();
                 }
                 else {
                     showErrorDialog("Registration Failed");
@@ -144,7 +144,11 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     // TODO: Save the display name to Shared Preferences
-
+    private void saveUsername() {
+        String username = mUsernameView.getText().toString();
+        SharedPreferences prefs = getSharedPreferences(CHAT_PREFS, 0);
+        prefs.edit().putString(DISPLAY_NAME_KEY, username).apply();
+    }
 
     // TODO: Create an alert dialog to show in case registration failed
     private void showErrorDialog(String error) {
