@@ -1,14 +1,23 @@
 package com.orkunduzgun.flashchatnewfirebase;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -25,7 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mConfirmPasswordView;
 
     // Firebase instance variables
-
+    private FirebaseAuth mAuth = null;
 
 
     @Override
@@ -51,6 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         // TODO: Get hold of an instance of FirebaseAuth
+        mAuth = FirebaseAuth.getInstance();
 
 
     }
@@ -74,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -96,8 +106,7 @@ public class RegisterActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // TODO: Call create FirebaseUser() here
-
+            createFirebaseUser();
         }
     }
 
@@ -107,18 +116,44 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Add own logic to check for a valid password
-        return true;
+        if (mConfirmPasswordView.getText().toString() == password && password.length() > 5) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     // TODO: Create a Firebase user
+    private void createFirebaseUser() {
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+
+                }
+                else {
+                    showErrorDialog("Registration Failed");
+                }
+                Log.d("FlashChat", "Register task " + task.isSuccessful());
+            }
+        });
+    }
 
 
     // TODO: Save the display name to Shared Preferences
 
 
     // TODO: Create an alert dialog to show in case registration failed
+    private void showErrorDialog(String error) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(error).setTitle("Oupps");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        AlertDialog dialog = builder.show();
 
+    }
 
 
 
