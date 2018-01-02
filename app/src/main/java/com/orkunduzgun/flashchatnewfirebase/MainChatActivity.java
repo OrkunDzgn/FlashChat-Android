@@ -1,5 +1,6 @@
 package com.orkunduzgun.flashchatnewfirebase;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ public class MainChatActivity extends AppCompatActivity {
     }
 
     // TODO: Retrieve the display name from the Shared Preferences
+
 
 
     private void sendMessage() {
